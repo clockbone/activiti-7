@@ -1,0 +1,38 @@
+# 服务配置
+server:
+  port: 8085
+
+# Spring相关配置
+spring:
+  ##数据库连接信息
+  datasource:
+    # 数据源配置
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://127.0.0.1:3309/activity?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&useSSL=false&allowMultiQueries=true&nullCatalogMeansCurrent=true
+    username: root
+    password: 123456
+
+    # SQLException: XAER_INVAL: Invalid arguments (or unsupported command)问题
+    xa:
+      properties:
+        pinGlobalTxToPhysicalConnection: true
+        useServerPrepStmts: true
+
+  thymeleaf:
+    mode: HTML
+    encoding: utf-8
+    # 禁用缓存
+    cache: false
+  application:
+    # 注册应用名
+    name: actdemo
+  mvc:
+    # 静态资源路径
+    static-path-pattern: /static/**
+  # 参考配置https://www.cnblogs.com/liaojie970/p/8857710.html
+  activiti:
+    # 自动建表
+    database-schema: activity
+    database-schema-update: true
+    history-level: full
+    db-history-used: true

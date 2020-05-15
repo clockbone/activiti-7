@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:include="common/common_head::commonHead('流程图')"/>
+<body>
+<h1>流程图</h1>
+<button type="button" class="btn btn-primary" data-toggle="modal"
+        data-target="#exampleModal" data-whatever="@申请">新建</button>
+<table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>模型名称</th>
+        <th>key</th>
+        <th>版本</th>
+        <th>部署ID</th>
+        <th>创建时间</th>
+        <th>最后更新时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="data : ${models}">
+        <td th:text="${data.id}">LeaveBill:1:4</td>
+        <td>
+            <a th:href="@{/static/modeler.html(modelId=${data.id})}" class="font-blue" th:text="${data.name}">流程名称</a>
+        </td>
+        <td th:text="${data.key}">1</td>
+        <td th:text="${data.version}"></td>
+        <td th:text="${data.deploymentId}"></td>
+        <td th:text="${data.createTime}">
+            2018-02-25 17:28:35
+        </td>
+        <td th:text="${data.lastUpdateTime}">
+            2018-02-25 17:28:35
+        </td>
+        <td>
+            <a href="javascript:;" th:attr="id=${data.id}" class="font-blue deploymentBtn">发布流程</a>&nbsp;&nbsp;
+            <a th:href="@{/models/export/{modelId}(modelId=${data.id})}" class="font-blue">导出</a>&nbsp;&nbsp;
+            <a href="javascript:;" th:attr="id=${data.id}" class="font-blue deleteBtn">删除</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">新建模型</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form  id="myForm" action="/models/newmodel" method="post">
+                <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="name" class="col-form-label">流程名称:</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="key" class="col-form-label">流程key:</label>
+                            <input class="form-control" id="key" name="key"></input>
+                        </div>
+                        <div class="form-group">
+                            <label for="des" class="col-form-label">描述:</label>
+                            <input class="form-control" id="des" name="des"></input>
+                        </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary save">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.deleteBtn').on('click', function () {
+        var id = $(this).attr('id');
+        Ewin.confirm({message: "确认要删除吗？"}).on(function (e) {
+            if (!e) {
+                return;
+            }
+            $.ajax({
+                url: '/models/del/' + id,
+                type: 'delete',
+                data: {},
+                success: function (data) {
+                    if (data.code == 200) {
+                        Ewin.alert();
+                        window.location.reload();
+                    } else {
+                        Ewin.alert("操作失败");
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    });
+
+    // 发布流程
+    $('.deploymentBtn').on('click', function () {
+        var id = $(this).attr('id');
+        Ewin.confirm({message: "确认要发布吗？"}).on(function (e) {
+            if (!e) {
+                return;
+            }
+            $.ajax({
+                url: '/models/' + id + '/deployment',
+                type: 'POST',
+                data: {},
+                success: function (data) {
+                    if (data.code == 200) {
+                        Ewin.alert("发布成功");
+                        window.location.reload();
+                    } else {
+                        Ewin.alert(data.errorMsg);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>
